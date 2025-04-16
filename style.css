@@ -1,0 +1,322 @@
+/* ✅ Định dạng chung */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #87CEFA;
+    margin: 20px;
+}
+
+/* ✅ Tiêu đề chính */
+h1 {
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ✅ Danh sách nội dung */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+li:hover {
+    transform: scale(1.02);
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ Định dạng liên kết */
+a {
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+/* ✅ Định dạng các nút bấm */
+.btn {
+    padding: 8px 12px;
+    border-radius: 5px;
+    color: white;
+    transition: background 0.3s ease-in-out;
+}
+
+.btn-success {
+    background-color: #28a745;
+}
+
+.btn-primary {
+    background-color: #007bff;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: black;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+/* ✅ Hiệu ứng hover cho các nút */
+.btn:hover {
+    opacity: 0.8;
+}
+
+/* ✅ Ô tìm kiếm */
+.search-container {
+    display: flex;
+    justify-content: flex-end; /* Căn lề phải cho thanh tìm kiếm */
+    margin-bottom: 15px;
+}
+
+.search-bar {
+    width: 120px; /* Giảm chiều rộng thanh tìm kiếm */
+    max-width: 100%; /* Đảm bảo thanh tìm kiếm không vượt quá chiều rộng màn hình */
+    border-radius: 5px;
+    padding: 6px; /* Giảm padding để thanh tìm kiếm nhỏ lại */
+    border: 1px solid #ccc;
+    font-size: 12px; /* Giảm kích thước font trong thanh tìm kiếm */
+}
+
+.search-btn {
+    padding: 6px 10px; /* Giảm padding của nút tìm kiếm */
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 12px; /* Giảm kích thước font của nút tìm kiếm */
+}
+
+.search-btn:hover {
+    background-color: #0056b3;
+}
+
+
+/* ✅ Hồ sơ người dùng */
+.profile-box {
+    background: #fcfcfc;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #007bff;
+    margin-bottom: 20px;
+}
+
+.profile-box h4 {
+    color: #007bff;
+}
+
+/* ✅ Cải thiện layout hồ sơ */
+.profile-box {
+    max-width: 500px; /* Giới hạn chiều rộng */
+    margin: 0 auto; /* Canh giữa */
+}
+
+/* ✅ Điều chỉnh responsive */
+@media (max-width: 768px) {
+    /* Điều chỉnh cho ô tìm kiếm */
+    .search-container {
+        justify-content: center; /* Canh giữa thanh tìm kiếm */
+    }
+    
+    .search-bar {
+        width: 100%; /* Đảm bảo thanh tìm kiếm chiếm toàn bộ chiều rộng */
+    }
+    
+    .profile-box {
+        text-align: center; /* Căn giữa nội dung hồ sơ */
+        width: 100%; /* Chiếm toàn bộ chiều rộng */
+        margin: 20px auto; /* Thêm margin trên dưới */
+    }
+
+    h1 {
+        font-size: 1.5rem; /* Điều chỉnh kích thước tiêu đề */
+    }
+    
+    .btn {
+        width: 100%; /* Các nút bấm sẽ chiếm chiều rộng đầy đủ */
+        margin-bottom: 10px;
+    }
+}
+
+/* ✅ Thông báo thành công */
+.alert {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+/* ✅ Hiệu ứng hover cho các phần tử */
+li:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ Thêm margin cho phần tử chính */
+main {
+    margin-top: 30px;
+}
+
+/* ✅ Form thêm nội dung */
+.content-add {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.form-button {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.btn-primary {
+    background: #007bff;
+    padding: 12px 35px;
+    font-size: 1.1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* ✅ Responsive cho form */
+@media (max-width: 768px) {
+    .content-form {
+        margin: 15px;
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        padding: 15px;
+    }
+}
+
+
+.content-edit {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.form-button {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.btn-primary {
+    background: #007bff;
+    padding: 12px 35px;
+    font-size: 1.1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* ✅ Responsive cho form */
+@media (max-width: 768px) {
+    .content-form {
+        margin: 15px;
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        padding: 15px;
+    }
+}

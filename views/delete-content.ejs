@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xóa nội dung</title>
+</head>
+<body>
+    <h2>Bạn có chắc chắn muốn xóa nội dung này không?</h2>
+    <p>Tiêu đề: <%= content.title %></p>
+    <p>Mô tả: <%= content.description %></p>
+
+    <form action="/contents/delete/<%= content.id %>" method="POST">
+        <button type="submit">Xóa</button>
+        <a href="/contents">Hủy</a>
+    </form>
+</body>
+</html>

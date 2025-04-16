@@ -1,0 +1,15 @@
+<form action="/contents/add" method="POST" class="content-form">
+    <h2>Thêm Nội Dung Mới</h2>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <label for="title">Tiêu đề:</label>
+    <input type="text" name="title" id="title" required class="input-field">
+    
+    <label for="description">Mô tả:</label>
+    <textarea name="description" id="description" class="input-field"></textarea>
+
+    <label for="media_url">Link media:</label>
+    <input type="text" name="media_url" id="media_url" class="input-field">
+    
+    <button type="submit" class="btn btn-primary">Gửi nội dung qua N8N</button>
+</form>
