@@ -4,27 +4,29 @@
     <meta charset="UTF-8">
     <title>Chỉnh sửa hồ sơ</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css"> <!-- 🔧 Sửa lỗi ref -> href -->
+    <link rel="stylesheet" href="/style.css"> 
 </head>
-<body class="container mt-4">
-    <h2 class="text-primary">✏️ Chỉnh sửa hồ sơ</h2>
+<body class="porfile-page">
+    <div class="edit-profile-page"> 
+        <h2 class="text-primary">✏️ Chỉnh sửa hồ sơ</h2>
 
-    <!-- Hiển thị lỗi nếu có -->
-    <% if (error) { %>
-        <div class="alert alert-danger"><%= error %></div>
-    <% } %>
+            <!-- Hiển thị lỗi nếu có -->
+        <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
 
-    <form action="/profile/edit" method="POST">
-        <div class="mb-3">
-            <label class="form-label">Tên đăng nhập:</label>
-            <input type="text" name="username" class="form-control" value="<%= user.username %>" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Email:</label>
-            <input type="email" name="email" class="form-control" value="<%= user.email %>" required>
-        </div>
-        <button type="submit" class="btn btn-success">💾 Lưu thay đổi</button>
-        <a href="/home" class="btn btn-secondary">🔙 Quay lại</a>
-    </form>
+        <form action="/profile/edit" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Tên đăng nhập:</label>
+                <input type="text" name="username" class="form-control" value="<%= user.username %>" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email:</label>
+                <input type="email" name="email" class="form-control" value="<%= user.email %>" required>
+            </div>
+            <button type="submit" class="btn btn-success">💾 Lưu thay đổi</button>
+                <a href="/home" class="btn btn-secondary">🔙 Quay lại</a>
+        </form>
+    </div>
 </body>
 </html>

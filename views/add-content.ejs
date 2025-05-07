@@ -1,15 +1,100 @@
-<form action="/contents/add" method="POST" class="content-form">
-    <h2>Thêm Nội Dung Mới</h2>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css">
-    <label for="title">Tiêu đề:</label>
-    <input type="text" name="title" id="title" required class="input-field">
-    
-    <label for="description">Mô tả:</label>
-    <textarea name="description" id="description" class="input-field"></textarea>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Gửi Nội Dung tới Google Sheet</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <div class="container">
+    <h2>📝 Gửi Nội Dung Facebook</h2>
+    <form action="http://localhost:5678/webhook/form-to-sheet" method="POST" class="row g-3">
 
-    <label for="media_url">Link media:</label>
-    <input type="text" name="media_url" id="media_url" class="input-field">
-    
-    <button type="submit" class="btn btn-primary">Gửi nội dung qua N8N</button>
-</form>
+      <div class="col-md-6">
+        <label class="form-label">Chủ đề:</label>
+        <input type="text" name="title" class="form-control" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Loại bài viết:</label>
+        <select name="type" class="form-select">
+          <option value="Photos">Photos</option>
+          <option value="Feed">Feed</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="status" class="form-label">Duyệt đăng</label>
+        <select name="status" class="form-select" required>
+          <option value="đang đăng">Đang đăng</option>
+          <option value="hoàn thành">Hoàn thành</option>
+        </select>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Nội dung:</label>
+        <textarea name="description" rows="3" class="form-control" required></textarea>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Câu hỏi cuối bài đăng:</label>
+        <textarea name="ending" rows="2" class="form-control"></textarea>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Page ID:</label>
+        <input type="text" name="pageId" class="form-control">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Link bài viết (nếu có):</label>
+        <input type="text" name="link" class="form-control">
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 1:</label>
+          <input type="text" name="image1" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 2:</label>
+          <input type="text" name="image2" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 3:</label>
+          <input type="text" name="image3" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 4:</label>
+          <input type="text" name="image4" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 5:</label>
+          <input type="text" name="image5" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 6:</label>
+          <input type="text" name="image6" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 7:</label>
+          <input type="text" name="image7" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 8:</label>
+          <input type="text" name="image8" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 9:</label>
+          <input type="text" name="image9" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Ảnh 10:</label>
+          <input type="text" name="image10" class="form-control">
+        </div>
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-success">📤 Gửi vào Google Sheet</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

@@ -12,6 +12,13 @@
         <div class="container">
             <a class="navbar-brand" href="/home">🏠 Quản lý nội dung</a>
             <div class="ml-auto d-flex align-items-center">
+                <!-- Liên kết quản lý người dùng (chỉ cho admin) -->
+                <% if (user && user.role === 'admin') { %>
+                    <div class="mb-3">
+                        <a href="/users" class="btn btn-outline-dark me-2">👥 Quản lý người dùng</a>
+                        <a href="/users/edit/<%= user.id %>" class="btn btn-outline-warning">✏️ Chỉnh sửa hồ sơ</a>
+                    </div>
+                <% } %>
                 <% if (user) { %>
                     <p class="mb-0 me-3 text-light">👤 Chào <strong><%= user.username %></strong></p>
                     <button class="btn btn-light btn-sm" onclick="toggleProfile()">🔧 Xem hồ sơ</button>
@@ -27,12 +34,12 @@
     <div id="profile-box" class="profile-box p-3 mt-3 bg-light border rounded" style="display: none;">
         <h4 class="text-primary">👤 Hồ sơ cá nhân</h4>
         <p><strong>Tên:</strong> <%= user.username %></p>
-        <p><strong>Email:</strong> <%= user.email ? user.email : "Chưa cập nhật" %></p>
+        <p><strong>Email:</strong> <%= user.email %></p>
         <p><strong>Vai trò:</strong> <%= user.role === 'admin' ? 'Quản trị viên' : 'Người dùng' %></p>
         <a href="/profile/edit" class="btn btn-outline-primary btn-sm">✏️ Cập nhật hồ sơ</a>
         <a href="/profile/change-password" class="btn btn-outline-warning btn-sm">🔑 Đổi mật khẩu</a>
     </div>
-
+    <a href="/auth/facebook" class="btn btn-primary mb-3">🔗 Đăng nhập Facebook để cấp quyền đăng bài</a>
     <!-- Thanh tìm kiếm -->
     <div class="search-container mt-3">
         <form action="/search" method="GET" class="d-flex">
@@ -98,10 +105,10 @@
             profileBox.style.display = (profileBox.style.display === "none") ? "block" : "none";
         }
 
-        window.onload = function() {
+        window.onload = () =>{
             const message = document.getElementById('successMessage');
             if (message) {
-                setTimeout(function () {
+                setTimeout( () => {
                     message.style.display = 'none';
                 }, 3000);
             }

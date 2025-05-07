@@ -28,7 +28,7 @@ li {
 }
 
 li:hover {
-    transform: scale(1.02);
+    transform: scale(1.03);
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
 }
 
@@ -71,82 +71,50 @@ a {
 /* ✅ Ô tìm kiếm */
 .search-container {
     display: flex;
-    justify-content: flex-end; /* Căn lề phải cho thanh tìm kiếm */
+    justify-content: flex-end;
     margin-bottom: 15px;
 }
 
 .search-bar {
-    width: 120px; /* Giảm chiều rộng thanh tìm kiếm */
-    max-width: 100%; /* Đảm bảo thanh tìm kiếm không vượt quá chiều rộng màn hình */
+    width: 120px;
+    max-width: 100%;
     border-radius: 5px;
-    padding: 6px; /* Giảm padding để thanh tìm kiếm nhỏ lại */
+    padding: 6px;
     border: 1px solid #ccc;
-    font-size: 12px; /* Giảm kích thước font trong thanh tìm kiếm */
+    font-size: 12px;
 }
 
 .search-btn {
-    padding: 6px 10px; /* Giảm padding của nút tìm kiếm */
+    padding: 6px 10px;
     border-radius: 5px;
     background-color: #007bff;
     color: white;
     border: none;
     cursor: pointer;
-    font-size: 12px; /* Giảm kích thước font của nút tìm kiếm */
+    font-size: 12px;
 }
 
 .search-btn:hover {
     background-color: #0056b3;
 }
 
-
 /* ✅ Hồ sơ người dùng */
 .profile-box {
-    background: #fcfcfc;
+    background: #cfddcf;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     border-left: 5px solid #007bff;
     margin-bottom: 20px;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .profile-box h4 {
     color: #007bff;
 }
 
-/* ✅ Cải thiện layout hồ sơ */
-.profile-box {
-    max-width: 500px; /* Giới hạn chiều rộng */
-    margin: 0 auto; /* Canh giữa */
-}
-
-/* ✅ Điều chỉnh responsive */
-@media (max-width: 768px) {
-    /* Điều chỉnh cho ô tìm kiếm */
-    .search-container {
-        justify-content: center; /* Canh giữa thanh tìm kiếm */
-    }
-    
-    .search-bar {
-        width: 100%; /* Đảm bảo thanh tìm kiếm chiếm toàn bộ chiều rộng */
-    }
-    
-    .profile-box {
-        text-align: center; /* Căn giữa nội dung hồ sơ */
-        width: 100%; /* Chiếm toàn bộ chiều rộng */
-        margin: 20px auto; /* Thêm margin trên dưới */
-    }
-
-    h1 {
-        font-size: 1.5rem; /* Điều chỉnh kích thước tiêu đề */
-    }
-    
-    .btn {
-        width: 100%; /* Các nút bấm sẽ chiếm chiều rộng đầy đủ */
-        margin-bottom: 10px;
-    }
-}
-
-/* ✅ Thông báo thành công */
+/* ✅ Thông báo */
 .alert {
     margin-top: 20px;
     padding: 10px;
@@ -158,19 +126,8 @@ a {
     color: white;
 }
 
-/* ✅ Hiệu ứng hover cho các phần tử */
-li:hover {
-    transform: scale(1.03);
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
-}
-
-/* ✅ Thêm margin cho phần tử chính */
-main {
-    margin-top: 30px;
-}
-
-/* ✅ Form thêm nội dung */
-.content-add {
+/* ✅ Form thêm/sửa nội dung */
+.content-add, .content-edit {
     max-width: 600px;
     margin: 20px auto;
     padding: 25px;
@@ -228,95 +185,330 @@ main {
     transform: translateY(-2px);
 }
 
-/* ✅ Responsive cho form */
-@media (max-width: 768px) {
-    .content-form {
-        margin: 15px;
-        padding: 20px;
-    }
-    
-    .form-group {
-        margin-bottom: 1rem;
-    }
-    
-    .btn-primary {
-        width: 100%;
-        padding: 15px;
-    }
-}
-
-
-.content-edit {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 25px;
+/* ✅ Khung đăng nhập */
+.login-card {
     background: white;
+    padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+    margin: 20px auto;
 }
 
-.form-title {
+.login-card h2 {
     color: #007bff;
+    margin-bottom: 20px;
     text-align: center;
-    margin-bottom: 30px;
 }
 
-.form-group {
-    margin-bottom: 1.5rem;
+/* ✅ Responsive */
+@media (max-width: 768px) {
+    .search-container {
+        justify-content: center;
+    }
+    .search-bar {
+        width: 100%;
+    }
+    .profile-box, .content-add, .content-edit, .login-card {
+        width: 90%;
+        margin: 20px auto;
+    }
+    h1 {
+        font-size: 1.5rem;
+    }
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
+/* ✅ Toàn bộ trang login */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #87cefa; /* Màu nền xanh nhạt */
+}
+
+/* ✅ Container chứa form */
+.login-container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* ✅ Form bên trong */
+.login-container form {
+    width: 100%;
+}
+
+/* ✅ Tiêu đề */
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #007bff;
+}
+
+/* ✅ Các input */
+.login-container .form-control {
+    padding: 10px;
+    border-radius: 6px;
+}
+
+/* ✅ Nút Đăng nhập */
+.login-container button[type="submit"] {
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 6px;
+}
+
+/* ✅ Các link nhỏ */
+.login-container p {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.login-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.login-container a:hover {
+    text-decoration: underline;
+}
+
+/* ✅ Khung form đổi mật khẩu */
+.change-password-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+/* ✅ Định dạng các trường trong form */
+.change-password-container .form-label {
     font-weight: 600;
     color: #495057;
 }
 
-.input-field {
-    width: 100%;
-    padding: 0.75rem;
-    border: 2px solid #dee2e6;
+.change-password-container .form-control {
     border-radius: 0.5rem;
-    transition: border-color 0.3s ease;
+    border: 1px solid #dee2e6;
+    padding: 12px;
 }
 
-.input-field:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-}
-
-.form-button {
-    text-align: center;
-    margin-top: 1.5rem;
-}
-
-.btn-primary {
-    background: #007bff;
+.change-password-container button[type="submit"] {
+    background-color: #28a745;
+    color: white;
     padding: 12px 35px;
     font-size: 1.1rem;
     border-radius: 0.5rem;
     transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
-    background: #0056b3;
+.change-password-container button[type="submit"]:hover {
+    background-color: #218838;
     transform: translateY(-2px);
 }
 
-/* ✅ Responsive cho form */
+/* ✅ Cải thiện cảnh báo thông báo */
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* ✅ Responsive */
 @media (max-width: 768px) {
-    .content-form {
-        margin: 15px;
-        padding: 20px;
+    .change-password-container {
+        width: 90%;
     }
-    
-    .form-group {
-        margin-bottom: 1rem;
-    }
-    
-    .btn-primary {
-        width: 100%;
-        padding: 15px;
-    }
+}
+/* ✅ Khung form chỉnh sửa hồ sơ */
+.edit-profile-page {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+/* ✅ Cải thiện cảnh báo thông báo */
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
+}
+/* ✅ Khung form thêm nội dung */
+.content-form {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* ✅ Các trường input và textarea */
+.input-field {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #dee2e6;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+/* ✅ Nút gửi */
+.btn-primary {
+    background-color: #007bff;
+    padding: 12px 35px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+/* ✅ Hiệu ứng hover cho nút */
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* ✅ Tiêu đề */
+h2 {
+    color: #007bff;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ✅ Khung chứa form đăng ký */
+.register-from {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng đổ */
+    max-width: 600px;  /* Giới hạn chiều rộng */
+    margin: 20px auto; /* Căn giữa form */
+}
+
+/* ✅ Cải thiện tiêu đề */
+h2.text-success {
+    color: #28a745; /* Màu xanh cho tiêu đề */
+    margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
+    text-align: center;
+}
+
+/* ✅ Form đăng ký */
+form {
+    margin-top: 20px;
+}
+
+/* ✅ Các input trong form */
+form .form-control {
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6; /* Đường viền nhạt */
+    padding: 12px;
+    font-size: 14px;
+}
+
+/* ✅ Các input khi focus */
+form .form-control:focus {
+    border-color: #007bff; /* Màu viền khi focus */
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* Hiệu ứng bóng khi focus */
+}
+
+/* ✅ Nút đăng ký */
+button[type="submit"] {
+    background-color: #28a745; /* Màu xanh cho nút */
+    padding: 12px 35px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    color: white;
+    width: 100%; /* Nút chiếm toàn bộ chiều rộng */
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #218838; /* Đổi màu khi hover */
+    transform: translateY(-2px); /* Hiệu ứng nâng nút khi hover */
+}
+
+/* ✅ Liên kết đăng nhập */
+p.text-center {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+p.text-center a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+p.text-center a:hover {
+    text-decoration: underline;
+}
+
+/* ✅ Cảnh báo (Error / Success) */
+.alert {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+
+/* Căn giữa form toàn màn hình */
+.centered-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f8f9fa; /* màu nền nhạt */
+}
+
+/* Khung card đẹp */
+.card-form {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 350px;
+    max-width: 500px;
+    width: 100%;
 }

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+const db = require('../db'); // Giữ nguyên kết nối với MySQL
 const bcrypt = require('bcryptjs');
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
@@ -16,20 +16,24 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Biểu thức chính quy kiểm tra email hợp lệ
+const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
 // ✅ Hiển thị trang quên mật khẩu
 router.get("/forgot-password", (req, res) => {
     res.render("forgot-password", { error: null, success: null });
 });
 
 // ✅ Xử lý gửi email đặt lại mật khẩu
-router.post("/forgot-password", (req, res) => {
-    const { email } = req.body;
+router.post("/forgot-password", async (req, res) => {  // Chú ý async ở đây
+    const email = req.body.email.trim();
     if (!email) {
         return res.render("forgot-password", { error: "Vui lòng nhập email!", success: null });
     }
 
-    db.query("SELECT id FROM users WHERE email = ?", [email], (err, results) => {
-        if (err || results.length === 0) {
+    try {
+        const [results] = await db.query("SELECT id FROM users WHERE email = ?", [email]);
+        if (results.length === 0) {
             return res.render("forgot-password", { error: "Email không tồn tại!", success: null });
         }
 
@@ -37,25 +41,24 @@ router.post("/forgot-password", (req, res) => {
         const token = crypto.randomBytes(20).toString("hex");
         const expires = new Date(Date.now() + 3600000); // 1 giờ
 
-        db.query("UPDATE users SET reset_token = ?, reset_expires = ? WHERE id = ?", [token, expires, userId], async (err) => {
-            if (err) {
-                return res.render("forgot-password", { error: "Lỗi hệ thống!", success: null });
-            }
+        await db.query("UPDATE users SET reset_token = ?, reset_expires = ? WHERE id = ?", [token, expires, userId]);
 
-            // Gửi email
-            const resetLink = `${process.env.BASE_URL}/reset-password/${token}`;
-            await transporter.sendMail({
-                from: `"Support" <${process.env.EMAIL_USER}>`,
-                to: email,
-                subject: "Đặt lại mật khẩu",
-                html: `<p>Nhấn vào link dưới đây để đặt lại mật khẩu:</p>
-                       <a href="${resetLink}">${resetLink}</a>
-                       <p>Link này có hiệu lực trong 1 giờ.</p>`
-            });
-
-            res.render("forgot-password", { error: null, success: "Email đặt lại mật khẩu đã được gửi!" });
+        // Gửi email
+        const resetLink = `${process.env.BASE_URL}/reset-password/${token}`;
+        await transporter.sendMail({
+            from: `"Support" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: "Đặt lại mật khẩu",
+            html: `<p>Nhấn vào link dưới đây để đặt lại mật khẩu:</p>
+                   <a href="${resetLink}">${resetLink}</a>
+                   <p>Link này có hiệu lực trong 1 giờ.</p>`
         });
-    });
+
+        res.render("forgot-password", { error: null, success: "Email đặt lại mật khẩu đã được gửi!" });
+    } catch (error) {
+        console.error("Lỗi hệ thống:", error);
+        res.render("forgot-password", { error: "Lỗi hệ thống!", success: null });
+    }
 });
 
 // ✅ Hiển thị trang đặt lại mật khẩu
@@ -79,21 +82,22 @@ router.post("/reset-password/:token", async (req, res) => {
         return res.render("reset-password", { token, error: "Mật khẩu không khớp!" });
     }
 
-    db.query("SELECT id FROM users WHERE reset_token = ? AND reset_expires > NOW()", [token], async (err, results) => {
-        if (err || results.length === 0) {
+    try {
+        const [results] = await db.query("SELECT id FROM users WHERE reset_token = ? AND reset_expires > NOW()", [token]);
+        if (results.length === 0) {
             return res.send("Token không hợp lệ hoặc đã hết hạn!");
         }
 
         const userId = results[0].id;
         const hashedPassword = await bcrypt.hash(new_password, 10);
 
-        db.query("UPDATE users SET password = ?, reset_token = NULL, reset_expires = NULL WHERE id = ?", [hashedPassword, userId], (err) => {
-            if (err) {
-                return res.send("Lỗi hệ thống!");
-            }
-            res.redirect("/login");
-        });
-    });
+        await db.query("UPDATE users SET password = ?, reset_token = NULL, reset_expires = NULL WHERE id = ?", [hashedPassword, userId]);
+
+        res.redirect("/login");
+    } catch (error) {
+        console.error("Lỗi hệ thống khi đặt lại mật khẩu:", error);
+        res.send("Lỗi hệ thống!");
+    }
 });
 
 // ✅ Xử lý đăng xuất
@@ -104,32 +108,53 @@ router.get('/logout', (req, res) => {
 
 // ✅ Hiển thị trang đăng ký
 router.get('/register', (req, res) => {
-    res.render('register', { message: null });
+    res.render('register', { error: null, success: null });
 });
 
 // ✅ Xử lý đăng ký tài khoản
 router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, confirm_password, email, role } = req.body;
 
     try {
-        // Kiểm tra xem username đã tồn tại chưa
-        const [existingUser] = await db.promise().query('SELECT * FROM users WHERE username = ?', [username]);
+        const trimmedUsername = username.trim();
+        const trimmedEmail = email.trim();
+
+        // Kiểm tra tên đăng nhập đã tồn tại
+        const [existingUser] = await db.query('SELECT * FROM users WHERE username = ?', [trimmedUsername]);
 
         if (existingUser.length > 0) {
-            return res.render('register', { message: '❌ Tên đăng nhập đã tồn tại!' });
+            return res.render('register', { error: '❌ Tên đăng nhập đã tồn tại!', success: null });
         }
 
-        // Mã hóa mật khẩu trước khi lưu
+        // Kiểm tra email đã tồn tại
+        const [existingEmail] = await db.query('SELECT * FROM users WHERE email = ?', [trimmedEmail]);
+        if (existingEmail.length > 0) {
+            return res.render('register', { error: '❌ Email đã tồn tại!', success: null });
+        }
+
+        // Kiểm tra email hợp lệ
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+        if (!emailRegex.test(trimmedEmail)) {
+            return res.render('register', { error: '❌ Email phải là Gmail hợp lệ!', success: null });
+        }
+
+        // Kiểm tra mật khẩu
+        if (password !== confirm_password) {
+            return res.render('register', { error: '❌ Mật khẩu và mật khẩu xác nhận không khớp!', success: null });
+        }
+
+        // Mã hóa mật khẩu
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await db.promise().query('INSERT INTO users (username, password) VALUES (?, ?)', 
-            [username, hashedPassword]);
+        // Lưu thông tin vào cơ sở dữ liệu
+        await db.query('INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)', 
+            [trimmedUsername, hashedPassword, trimmedEmail, role]);
 
-        return res.redirect('/login');
+        return res.render('register', { error: null, success: '🎉 Đăng ký thành công! Vui lòng đăng nhập.' });
 
     } catch (error) {
         console.error('Lỗi khi đăng ký:', error);
-        return res.render('register', { message: '❌ Lỗi hệ thống!' });
+        return res.render('register', { error: '❌ Lỗi hệ thống, vui lòng thử lại!', success: null });
     }
 });
 

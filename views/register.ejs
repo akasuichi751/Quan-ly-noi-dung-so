@@ -4,43 +4,48 @@
     <meta charset="UTF-8">
     <title>Đăng ký</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body class="container mt-5">
-    <h2 class="text-center text-success">📝 Đăng ký</h2>
+    <div class="register-from">
+        <h2 class="text-center text-success">📝 Đăng ký</h2>
+        <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
 
-    <% if (error) { %>
-        <div class="alert alert-danger"><%= error %></div>
-    <% } %>
+        <% if (success) { %>
+            <div class="alert alert-success"><%= success %></div>
+        <% } %>
 
-    <% if (success) { %>
-        <div class="alert alert-success"><%= success %></div>
-    <% } %>
-
-    <form action="/register" method="POST" class="mt-4">
-        <div class="mb-3">
-            <label class="form-label">Tên đăng nhập:</label>
-            <input type="text" name="username" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Mật khẩu:</label>
-            <input type="password" name="password" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Nhập lại mật khẩu:</label>
-            <input type="password" name="confirm_password" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Vai trò:</label>
-            <select name="role" class="form-select">
-                <option value="customer">Khách hàng</option>
-                <option value="admin">Quản trị viên</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-success w-100">Đăng ký</button>
-    </form>
-    
-    <p class="mt-3 text-center">
-        Đã có tài khoản? <a href="/login">Đăng nhập</a>
-    </p>
+        <form action="/register" method="POST" class="mt-4">
+            <div class="mb-3">
+                <label class="form-label">Tên đăng nhập:</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mật khẩu:</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nhập lại mật khẩu:</label>
+                <input type="password" name="confirm_password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nhập email:</label>
+                <input type="email" name="email" placeholder=" Email của bạn"  class="form-control" required/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Vai trò:</label>
+                <select name="role" class="form-select">
+                    <option value="customer">Khách hàng</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Đăng ký</button>
+        </form>
+        
+        <p class="mt-3 text-center">
+            Đã có tài khoản? <a href="/login">Đăng nhập</a>
+        </p>
+    </div>
 </body>
 </html>

@@ -10,37 +10,6 @@ const db = mysql.createConnection({
     database: 'content_manager'
 });
 
-
-// API nhận bài viết từ n8n hoặc webhook khác
-router.post('/api/post', async (req, res) => {
-    try {
-        const { title, content, image } = req.body;
-
-        console.log("📥 Nhận request từ N8N:", { title, content, image });
-
-        if (!title || !content) {
-            return res.status(400).json({ error: 'Thiếu tiêu đề hoặc nội dung' });
-        }
-
-        const sql = 'INSERT INTO contents (title, description, media_url) VALUES (?, ?, ?)';
-        db.query(sql, [title, content, image || ''], (err, result) => {
-            if (err) {
-                console.error('❌ Lỗi khi chèn vào MySQL:', err);
-                return res.status(500).json({ error: 'Không lưu được bài viết vào CSDL!' });
-            }
-
-            console.log('✅ Đã lưu bài viết vào MySQL:', { id: result.insertId, title });
-            res.status(200).json({ message: '✅ Đã nhận và lưu bài viết thành công!' });
-        });
-    } catch (err) {
-        console.error('❌ Lỗi server:', err);
-        res.status(500).json({ error: 'Lỗi server' });
-    }
-});
-
-
-  
-
 // ✅ Kiểm tra kết nối
 db.connect((err) => {
     if (err) {
@@ -167,27 +136,24 @@ router.get('/', (req, res) => {
     });
 });
 
-// nếu chưa cài: npm install axios
-
-router.post('/send-to-n8n', requireLogin, async (req, res) => {
-    const { title, description, media_url } = req.body;
-
-    console.log("📤 Đang gửi tới N8N với nội dung:", { title, description, media_url });
-
+// GET /contents/api/data
+router.post('/api/data', async (req, res) => {
     try {
-        const response = await axios.post('https://n8n.mitelai.com/webhook/dang-bai', {
-            title,
-            content: description,
-            image: media_url
-        });
-
-        console.log("✅ Phản hồi từ N8N:", response.status, response.data);
-        res.redirect('/contents?message=Đã gửi nội dung tới N8N!');
-    } catch (err) {
-        console.error("❌ Lỗi gửi đến N8N:", err.message);
-        res.redirect('/contents?message=Lỗi khi gửi tới N8N!');
+      const { fb_id, fb_link, content_text, media_ids, status } = req.body;
+  
+      await db.query(`
+        INSERT INTO content (fb_id, fb_link, body, media_ids, status, created_at)
+        VALUES (?, ?, ?, ?, ?, NOW())
+      `, [fb_id, fb_link, content_text, JSON.stringify(media_ids), status || 'đang đăng']);
+  
+      res.status(200).json({ message: 'Lưu thành công' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Lỗi lưu dữ liệu' });
     }
-});
+  });
+  
+
 
 
 

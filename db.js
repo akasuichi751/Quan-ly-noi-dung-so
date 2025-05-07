@@ -8,6 +8,9 @@ const connection = mysql.createConnection({
     database: 'content_manager'
 });
 
+// Biến đổi kết nối thành Promise sau khi đã tạo kết nối
+const db = connection.promise();
+
 // Kiểm tra kết nối
 connection.connect((err) => {
     if (err) {
@@ -17,5 +20,5 @@ connection.connect((err) => {
     console.log('✅ Đã kết nối MySQL thành công!');
 });
 
-// Xuất kết nối để sử dụng ở file khác
-module.exports = connection;
+// Export kết nối Promise để sử dụng ở nơi khác trong dự án
+module.exports = db;
