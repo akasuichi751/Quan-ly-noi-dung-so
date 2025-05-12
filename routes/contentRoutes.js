@@ -48,10 +48,19 @@ router.get('/add', requireLogin, (req, res) => {
 
 // ✅ Xử lý thêm nội dung
 router.post('/add', requireLogin, (req, res) => {
-    const { title, description, media_url } = req.body;
+    const { topic, content, post_end, status, page_id, post_type, post_link, img_1, img_2, img_3, img_4, img_5, img_6, img_7, img_8, img_9, img_10 } = req.body;
 
-    db.query('INSERT INTO contents (title, description, media_url) VALUES (?, ?, ?)', 
-    [title, description, media_url], (err) => {
+    // Lấy userId từ session
+    const userId = req.session.user.id; // Lấy user.id từ session
+
+    if (!userId) {
+        return res.status(401).send('Người dùng chưa đăng nhập');
+    }
+
+    // Insert vào bảng contents với user_id
+    db.query('INSERT INTO contents (user_id, topic, content, post_end, status, page_id, post_type, post_link, img_1, img_2, img_3, img_4, img_5, img_6, img_7, img_8, img_9, img_10) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+    [userId, topic, content, post_end, status, page_id, post_type, post_link, img_1, img_2, img_3, img_4, img_5, img_6, img_7, img_8, img_9, img_10], 
+    (err) => {
         if (err) {
             console.error('❌ Lỗi thêm nội dung:', err);
             return res.status(500).send('Lỗi thêm nội dung!');
@@ -59,6 +68,7 @@ router.post('/add', requireLogin, (req, res) => {
         res.redirect('/contents?message=thêm nội dung thành công!');
     });
 });
+
 
 // ✅ Trang sửa nội dung
 router.get('/edit/:id', requireLogin, (req, res) => {
@@ -136,24 +146,23 @@ router.get('/', (req, res) => {
     });
 });
 
-// GET /contents/api/data
-router.post('/api/data', async (req, res) => {
-    try {
-      const { fb_id, fb_link, content_text, media_ids, status } = req.body;
-  
-      await db.query(`
-        INSERT INTO content (fb_id, fb_link, body, media_ids, status, created_at)
-        VALUES (?, ?, ?, ?, ?, NOW())
-      `, [fb_id, fb_link, content_text, JSON.stringify(media_ids), status || 'đang đăng']);
-  
-      res.status(200).json({ message: 'Lưu thành công' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Lỗi lưu dữ liệu' });
-    }
-  });
-  
 
+// GET /contents/api/data
+router.post('/api/data', requireLogin, async (req, res) => {
+    try {
+        const { fb_id, fb_link, content_text, media_ids, status } = req.body;
+
+        await db.query(`
+          INSERT INTO content (fb_id, fb_link, body, media_ids, status, created_at)
+          VALUES (?, ?, ?, ?, ?, NOW())
+        `, [fb_id, fb_link, content_text, JSON.stringify(media_ids), status || 'đang đăng']);
+
+        res.status(200).json({ message: 'Lưu thành công' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Lỗi lưu dữ liệu' });
+    }
+});
 
 
 

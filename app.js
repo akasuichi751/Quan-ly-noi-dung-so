@@ -9,9 +9,8 @@ const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 
+
 require('dotenv').config();
-
-
 
 const app = express();
 const port = 3000;
@@ -19,10 +18,10 @@ const port = 3000;
 
 // ✅ Kết nối MySQL
 const db = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'root',
-    password: '',
-    database: 'content_manager'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
 });
 
 db.connect((err) => {
@@ -148,11 +147,24 @@ app.get('/home', requireLogin, (req, res) => {
     db.query('SELECT * FROM contents', (err, results) => {
         if (err) {
             console.error('❌ Lỗi lấy dữ liệu nội dung:', err);
-            return res.render('home', { user: req.session.user, contents: [], keyword: "" });
+            return res.render('home', {
+                user: req.session.user,
+                contents: [],
+                keyword: "", // 👉 thêm dòng này để tránh lỗi
+                userToken: req.session.userToken || null // cũng nên truyền luôn nếu bạn dùng
+            });
         }
-        res.render('home', { user: req.session.user, contents: results, keyword: "" });
+
+        res.render('home', {
+            user: req.session.user,
+            contents: results,
+            keyword: "", // 👉 thêm dòng này để tránh lỗi
+            userToken: req.session.userToken || null
+        });
     });
 });
+
+
 
 // ✅ Tìm kiếm nội dung
 app.get('/search', requireLogin, (req, res) => {
@@ -174,6 +186,7 @@ app.get('/search', requireLogin, (req, res) => {
     });
 });
 
+
 // ✅ Đăng xuất
 app.get('/logout', (req, res) => {
     req.session.destroy(() => {
@@ -181,69 +194,156 @@ app.get('/logout', (req, res) => {
     });
 });
 
-
-// Bước 1: Điều hướng người dùng đến trang xác thực Facebook
+// -------------------- [1] Điều hướng người dùng đến xác thực Facebook --------------------
 app.get('/auth/facebook', (req, res) => {
-    const fbAuthUrl = `https://www.facebook.com/v22.0/dialog/oauth?client_id=${process.env.FB_APP_ID}&redirect_uri=${process.env.FB_REDIRECT_URI}&scope=pages_manage_posts,pages_show_list,pages_read_engagement,public_profile&response_type=code`;
+    // Reset token hiện tại
+    req.session.userToken = null;
+    req.session.tokenExpiresAt = null;
+
+   const fbAuthUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${process.env.FB_APP_ID}&redirect_uri=${process.env.FB_REDIRECT_URI}&scope=pages_manage_posts,pages_show_list,pages_read_engagement,public_profile,email&response_type=code`;
+
+
+    console.log("🔍 [Facebook Auth] Trước khi điều hướng:");
+    console.log("📦 Session:", req.session);
+    console.log("📤 redirect_uri:", process.env.FB_REDIRECT_URI);
+
     res.redirect(fbAuthUrl);
+});
+
+
+// -------------------- [2] Callback từ Facebook --------------------
+app.get('/auth/facebook/callback', async (req, res) => {
+  const authorizationCode = req.query.code;
+
+  // Đổi mã xác thực lấy Access Token
+  const tokenResponse = await fetch('https://graph.facebook.com/v12.0/oauth/access_token', {
+    method: 'POST',
+    body: new URLSearchParams({
+      client_id: 'YOUR_APP_ID',
+      client_secret: 'YOUR_APP_SECRET',
+      redirect_uri: 'YOUR_REDIRECT_URI',
+      code: authorizationCode,
+    }),
   });
-  
-  // Bước 2: Callback nhận mã và lấy access token
-  app.get('/auth/facebook/callback', async (req, res) => {
-    const code = req.query.code;
-    try {
-      const tokenResponse = await axios.get(`https://graph.facebook.com/v22.0/oauth/access_token`, {
-        params: {
-          client_id: process.env.FB_APP_ID,
-          redirect_uri: process.env.FB_REDIRECT_URI,
-          client_secret: process.env.FB_APP_SECRET,
-          code
-        }
-      });
-  
-      const userToken = tokenResponse.data.access_token;
-  
-      // Lấy danh sách Page mà người dùng quản lý
-      const pageRes = await axios.get('https://graph.facebook.com/v22.0/me/accounts', {
-        params: {
-          access_token: userToken
-        }
-      });
-  
-      const page = pageRes.data.data[0];
-      const pageAccessToken = page.access_token;
-      const pageId = page.id;
-  
-      // Giả sử email đã được cung cấp qua yêu cầu hoặc đã có từ Facebook
-      const email = "user@example.com";  // Bạn có thể lấy email từ profile Facebook nếu cần
-  
-      // Lưu thông tin vào cơ sở dữ liệu
-      await saveToMariaDB(email, pageId, pageAccessToken);
-  
-      res.send(`
-        <h2>Đăng nhập thành công!</h2>
-        <p><strong>Page ID:</strong> ${pageId}</p>
-        <p><strong>Page Token:</strong> ${pageAccessToken}</p>
-        <p>Lưu thông tin này vào hệ thống của bạn để đăng bài qua n8n hoặc API.</p>
-      `);
-    } catch (error) {
-      console.error(error.response?.data || error);
-      res.send("Đã xảy ra lỗi khi xác thực Facebook.");
+
+  const tokenData = await tokenResponse.json();
+
+  // Trả về Access Token cho người dùng (hoặc có thể lưu trong cơ sở dữ liệu)
+  const accessToken = tokenData.access_token;
+
+  // Truyền access token đến n8n Webhook hoặc gửi về client
+  res.redirect(`YOUR_WEBHOOK_URL?access_token=${accessToken}`);
+});
+
+// -------------------- [3] Route lưu token Fanpage --------------------
+app.get('/luu-token', requireLogin, async (req, res) => {
+    const { email, pageId, pageToken } = req.query;
+
+    if (!email || !pageId || !pageToken) {
+        console.error("❌ Thiếu thông tin để lưu token.");
+        return res.send("❌ Thiếu thông tin token để lưu.");
     }
-  });
-  
-  // Lưu thông tin vào MariaDB
-  async function saveToMariaDB(email, pageId, pageToken) {
-    let conn;
+
     try {
-      conn = await pool.getConnection();
-      await conn.query('INSERT INTO facebook_tokens(email, page_id, page_token) VALUES (?, ?, ?)', [email, pageId, pageToken]);
+        console.log("📥 [Lưu Token] Email:", email, "| Page ID:", pageId);
+
+        await pool.execute(
+            `INSERT INTO facebook_tokens (email, page_id, page_token, created_at) 
+             VALUES (?, ?, ?, NOW())
+             ON DUPLICATE KEY UPDATE 
+                page_token = VALUES(page_token), 
+                created_at = NOW()`,
+            [email, pageId, pageToken]
+        );
+
+        // Lưu vào session
+        req.session.pageAccessToken = pageToken;
+        req.session.pageId = pageId;
+        req.session.facebookEmail = email;
+
+        console.log("✅ Token đã lưu vào database và session.");
+        res.redirect('/home');
+
     } catch (err) {
-      console.error('MariaDB Error:', err);
-    } finally {
-      if (conn) conn.release();
+        console.error("❌ [DB] Lỗi khi lưu token:", err);
+        res.status(500).send("❌ Lỗi khi lưu token vào database.");
     }
-  }
+});
+
+
+// -------------------- [4] Middleware kiểm tra token hết hạn --------------------
+function isTokenExpired(req) {
+    return !req.session.tokenExpiresAt || Date.now() > req.session.tokenExpiresAt;
+}
+
+app.use((req, res, next) => {
+    if (req.session.userToken && isTokenExpired(req)) {
+        console.warn("⚠️ Token Facebook đã hết hạn vào:", new Date(req.session.tokenExpiresAt).toLocaleString());
+        return res.redirect('/auth/facebook');
+    }
+    next();
+});
+
+// -------------------- [5] Ngắt kết nối Facebook --------------------
+app.get('/disconnect/facebook', requireLogin, (req, res) => {
+    delete req.session.userToken;
+    delete req.session.tokenExpiresAt;
+    delete req.session.pageAccessToken;
+    delete req.session.pageId;
+    delete req.session.facebookEmail;
+
+    console.log("🔴 Ngắt kết nối Facebook. Session hiện tại:", req.session);
+    res.redirect('/home');
+});
+
+// -------------------- [6] Route debug session (tùy chọn để kiểm tra) --------------------
+app.get('/debug/session', (req, res) => {
+    res.send(`
+        <h2>🧪 Thông tin Session hiện tại</h2>
+        <pre>${JSON.stringify(req.session, null, 2)}</pre>
+    `);
+});
+
+app.use(express.static('public'));
+
+// API tiếp nhận bài đăng từ n8n
+app.post('/api/save-post', (req, res) => {
+     res.send('✅ API đã sẵn sàng để nhận POST từ n8n!');
+    const { post_id, topic, content, post_end, status, page_id, post_type, post_link, images, user_id } = req.body;
+
+    // Kiểm tra nếu thiếu dữ liệu cần thiết
+    if (!post_id || !topic || !content || !user_id) {
+        return res.status(400).send({ error: 'Dữ liệu bài đăng thiếu!' });
+    }
+
+    // Chuyển các ảnh thành các trường img_1, img_2,... tối đa 10 ảnh
+    const imgColumns = [];
+    const imgValues = [];
+    const imagesArray = images || [];
+    
+    imagesArray.slice(0, 10).forEach((image, index) => {
+        imgColumns.push(`img_${index + 1}`);
+        imgValues.push(image);
+    });
+
+    // Truy vấn SQL để lưu bài đăng vào cơ sở dữ liệu
+    const query = `
+        INSERT INTO posts (post_id, topic, content, post_end, status, page_id, post_type, post_link, ${imgColumns.join(", ")}, user_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ${imgValues.map(() => '?').join(", ")}, ?)
+    `;
+
+    // Thực hiện query để lưu dữ liệu vào cơ sở dữ liệu
+    db.query(query, [post_id, topic, content, post_end, status, page_id, post_type, post_link, ...imgValues, user_id], (err, results) => {
+        if (err) {
+            console.error('❌ Lỗi khi lưu bài viết:', err);
+            return res.status(500).send({ error: 'Lỗi khi lưu bài viết vào cơ sở dữ liệu' });
+        }
+
+        console.log('✅ Bài viết đã được lưu vào cơ sở dữ liệu:', results);
+        res.status(200).send({ message: 'Bài viết đã được lưu thành công', post_id: results.insertId });
+    });
+});
+
 
 // ✅ Khởi động server
 app.listen(port, () => {
